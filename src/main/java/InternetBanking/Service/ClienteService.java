@@ -4,12 +4,13 @@ import InternetBanking.Model.Cliente;
 import InternetBanking.Model.RequestsModel.ClienteRequest;
 import InternetBanking.Model.Transacao;
 import InternetBanking.Repository.ClienteRepository;
-import InternetBanking.Repository.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.naming.directory.InvalidAttributesException;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class ClienteService {
@@ -20,30 +21,34 @@ public class ClienteService {
     @Autowired
     private TransacaoService transacaoService;
 
-    public List<Cliente> getAllClientes() {
-        return repository.findAll();
+    public Page<Cliente> getAllClientes(Pageable pagina) {
+        return repository.findAll(pagina);
     }
 
-    public Cliente addCliente(ClienteRequest cliente) {
+    public Cliente addCliente(ClienteRequest cliente) throws InvalidAttributesException {
+
+        if (cliente.getNome().isEmpty()) throw new InvalidAttributesException();
+
         return repository.save(new Cliente(cliente.getNome(), cliente.isPlanoExclusive(), cliente.getDataNascimento()));
     }
 
-    public void addSaldo(Transacao transacao) {
+    public void addSaldo(Transacao transacao) throws ClassNotFoundException {
 
-        Cliente cliente = repository.getByNumeroConta(transacao.getConta());
+        Cliente cliente = getClienteByConta(transacao.getConta());
+
         cliente.setSaldo(cliente.getSaldo().add(transacao.getValorTransacao()));
         repository.save(cliente);
     }
 
     public Cliente getClienteByConta(String conta) throws ClassNotFoundException {
 
-        if(clienteExist(conta)) return repository.getByNumeroConta(conta);
+        Cliente cliente = repository.getByNumeroConta(conta);
 
-        throw new ClassNotFoundException("Não há cliente com conta " + conta);
-    }
-
-    public Boolean clienteExist(String conta){
-        return repository.getByNumeroConta(conta) != null;
+        if (cliente != null){
+            return cliente;
+        }else{
+            throw new ClassNotFoundException();
+        }
     }
 
     public void debit(Cliente cliente, BigDecimal valorComTaxa) {

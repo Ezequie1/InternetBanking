@@ -1,6 +1,5 @@
 package InternetBanking.Controller;
 
-import InternetBanking.Model.RequestsModel.TranferenciaRequest;
 import InternetBanking.Model.TipoMovimentacao;
 import InternetBanking.Model.Transacao;
 import InternetBanking.Model.RequestsModel.TransacaoRequest;
@@ -10,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.AttributeNotFoundException;
 import java.util.List;
 
 @RestController
@@ -25,7 +25,7 @@ public class TransacaoController {
     }
 
     @GetMapping("/{tipoTransacao}/{data}")
-    public ResponseEntity<List<Transacao>> SaquePorData(@PathVariable TipoMovimentacao tipoTransacao, @PathVariable String data){
+    public ResponseEntity<List<Transacao>> SaquePorData(@PathVariable TipoMovimentacao tipoTransacao, @PathVariable String data) throws AttributeNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(service.getTransacoesPorTipo(tipoTransacao, data));
     }
 
@@ -37,12 +37,6 @@ public class TransacaoController {
     @PostMapping("/Saque")
     public ResponseEntity<Transacao> saque(@RequestBody TransacaoRequest transacao) throws ClassNotFoundException {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.sacar(transacao));
-    }
-
-    @PostMapping("/Transferencia")
-    public ResponseEntity<Transacao> transferencia(@RequestBody TranferenciaRequest transacao) throws ClassNotFoundException {
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.tranferencia(transacao));
     }
 
 }

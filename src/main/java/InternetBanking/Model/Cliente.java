@@ -2,6 +2,8 @@ package InternetBanking.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+
+import jakarta.validation.constraints.Past;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,7 +22,7 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idCliente;
     private String nome;
-    private Boolean planoExclusive;
+    private Boolean planoExclusive = false;
     private BigDecimal saldo = new BigDecimal(0);
     private String numeroConta = geradorConta();
     @JsonFormat(pattern = "dd/MM/yyyy")

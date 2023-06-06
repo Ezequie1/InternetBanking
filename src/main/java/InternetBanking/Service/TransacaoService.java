@@ -1,6 +1,7 @@
 package InternetBanking.Service;
 
 import InternetBanking.Model.Cliente;
+import InternetBanking.Model.ErrorModel.HandlerException;
 import InternetBanking.Model.TipoMovimentacao;
 import InternetBanking.Model.Transacao;
 import InternetBanking.Model.RequestsModel.TransacaoRequest;
@@ -8,6 +9,7 @@ import InternetBanking.Repository.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.management.AttributeNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +28,9 @@ public class TransacaoService {
         return repository.getByDiaTransacao(LocalDate.parse(data, DateTimeFormatter.ISO_DATE));
     }
 
-    public List<Transacao> getTransacoesPorTipo(TipoMovimentacao movimentacao, String data) {
+    public List<Transacao> getTransacoesPorTipo(TipoMovimentacao movimentacao, String data) throws AttributeNotFoundException {
+        if (movimentacao != TipoMovimentacao.DEPOSITO || movimentacao != TipoMovimentacao.SAQUE)  throw new AttributeNotFoundException();
+
         return repository.getTrasacoesByTipoTransacaoAndDate(movimentacao, LocalDate.parse(data, DateTimeFormatter.ISO_DATE));
     }
 
@@ -38,10 +42,10 @@ public class TransacaoService {
     }
 
     public Transacao sacar(TransacaoRequest transacao) throws ClassNotFoundException {
+        Cliente cliente = clienteService.getClienteByConta(transacao.conta);
 
-        if(hasSaldo(transacao)){
+        if(hasSaldo(transacao, cliente)){
 
-            Cliente cliente = clienteService.getClienteByConta(transacao.conta);
             Transacao novaTransacao = new Transacao(transacao.valorTransacao, transacao.conta, TipoMovimentacao.SAQUE);
 
             addTransacao(novaTransacao);
@@ -50,12 +54,11 @@ public class TransacaoService {
             return novaTransacao;
         }
 
-        throw new RuntimeException("Saldo insuficiente!");
+        throw new IllegalArgumentException("Não foi possível realizar a transação, saldo insuficiente!");
     }
 
-    public Boolean hasSaldo(TransacaoRequest transacao) throws ClassNotFoundException {
+    public Boolean hasSaldo(TransacaoRequest transacao, Cliente cliente) {
 
-        Cliente cliente = clienteService.getClienteByConta(transacao.conta);
         BigDecimal valorFinal = valorComTaxa(transacao.getValorTransacao(), cliente.getPlanoExclusive());
 
         return cliente.getSaldo().compareTo(valorFinal) >= 0;
