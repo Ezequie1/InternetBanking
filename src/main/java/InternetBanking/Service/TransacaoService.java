@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.management.AttributeNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -108,7 +107,6 @@ public class TransacaoService {
 
         clienteService.saveChanges(cliente);
         repository.delete(transacao);
-
     }
 
     public Transacao atualizaTransacao(TransacaoUpdate novaTransacao, String numeroConta, Long idTransacao) throws ClassNotFoundException {

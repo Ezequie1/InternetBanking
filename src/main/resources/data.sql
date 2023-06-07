@@ -32,6 +32,7 @@ CREATE TABLE transacao (
 
 INSERT INTO transacao (id_cliente, tipo_movimentacao, valor_transacao, numero_conta, horario_transacao, dia_transacao, conta_destino) VALUES
 ((SELECT id_cliente FROM cliente WHERE nome = 'João'), 'DEPOSITO', 20000.00, '123456', '10:00', '2022-01-05', ''),
+((SELECT id_cliente FROM cliente WHERE nome = 'João'), 'DEPOSITO', 5000.00, '123456', '16:00', '2022-01-05', ''),
 ((SELECT id_cliente FROM cliente WHERE nome = 'João'), 'SAQUE', 10000.00, '123456', '14:30', '2022-02-07', ''),
 
 ((SELECT id_cliente FROM cliente WHERE nome = 'Renato'), 'DEPOSITO', 3000.00, '789012', '11:15', '2022-06-18', ''),

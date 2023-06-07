@@ -1,6 +1,5 @@
 package InternetBanking.Controller;
 
-import InternetBanking.Model.Cliente;
 import InternetBanking.Model.RequestsModel.TransacaoUpdate;
 import InternetBanking.Model.TipoMovimentacao;
 import InternetBanking.Model.Transacao;
@@ -14,9 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.AttributeNotFoundException;
-import java.util.List;
-
 @RestController
 @RequestMapping("/Transacao")
 public class TransacaoController {
@@ -24,26 +20,25 @@ public class TransacaoController {
     @Autowired
     private TransacaoService service;
 
-    @GetMapping("/{data}")
-    public ResponseEntity<Page<Transacao>> transacaoPorData(@PathVariable String data,
+    @GetMapping()
+    public ResponseEntity<Page<Transacao>> transacaoPorData(@RequestParam String data,
                                                             @RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.status(HttpStatus.OK).body( service.getAllTransacoes(data, pageable) );
     }
 
-    @GetMapping("/{tipoTransacao}/{data}")
-    public ResponseEntity<Page<Transacao>> saquePorData(@PathVariable TipoMovimentacao tipoTransacao,
-                                                        @PathVariable String data,
+    @GetMapping("/TipoMovimentacao")
+    public ResponseEntity<Page<Transacao>> saquePorData(@RequestParam TipoMovimentacao tipoTransacao,
+                                                        @RequestParam String data,
                                                         @RequestParam(defaultValue = "0") int page,
                                                         @RequestParam(defaultValue = "10") int size) {
-
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(service.getTransacoesPorTipo(tipoTransacao, data, pageable));
     }
 
-    @GetMapping("/Conta/{conta}")
-    public ResponseEntity<Page<Transacao>> getTransacoesPorConta(@PathVariable String conta,
+    @GetMapping("/Conta")
+    public ResponseEntity<Page<Transacao>> getTransacoesPorConta(@RequestParam String conta,
                                                                  @RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(defaultValue = "10") int size) throws ClassNotFoundException {
         Pageable pageable = PageRequest.of(page, size);
@@ -61,8 +56,7 @@ public class TransacaoController {
     }
 
     @DeleteMapping("/Deletar")
-    public ResponseEntity<String> cancelaTransacao( @RequestParam String numeroConta, @RequestParam Long idTransacao) throws ClassNotFoundException {
-
+    public ResponseEntity<String> cancelaTransacao(@RequestParam String numeroConta, @RequestParam Long idTransacao) throws ClassNotFoundException {
         service.cancelaTransacao(numeroConta, idTransacao);
         return ResponseEntity.status(HttpStatus.OK).body("Transação deletada com sucesso, seu saldo foi ajustado!");
     }

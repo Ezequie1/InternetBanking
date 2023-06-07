@@ -6,6 +6,5 @@ import lombok.Getter;
 public enum TipoMovimentacao {
 
     SAQUE,
-    DEPOSITO,
-    TRANSFERENCIA_BANCARIA
+    DEPOSITO
 }

@@ -70,7 +70,7 @@ public class ClienteService {
         clienteSalvo.setNome( cliente.getNome().equals("") ? clienteSalvo.getNome() : cliente.getNome());
         clienteSalvo.setPlanoExclusive( cliente.isPlanoExclusive());
         clienteSalvo.setDataNascimento( cliente.getDataNascimento().equals(LocalDate.now()) ? clienteSalvo.getDataNascimento() : cliente.getDataNascimento());
-        clienteSalvo.setNumeroConta( cliente.getNumeroConta() == "" ? clienteSalvo.getNumeroConta() : cliente.getNumeroConta());
+        clienteSalvo.setNumeroConta( cliente.getNumeroConta() == null ? clienteSalvo.getNumeroConta() : cliente.getNumeroConta());
 
         transacaoService.updateTransactionsCliente(clienteSalvo);
 

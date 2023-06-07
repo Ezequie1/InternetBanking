@@ -24,12 +24,12 @@ public class ClienteController {      //Acesse http://localhost:8080/swagger-ui/
     @GetMapping
     public ResponseEntity<Page<Cliente>> getClientes(@RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body( service.getAllClientes(pageable) );
+        Pageable pageable = PageRequest.of(0, 10);
+        return ResponseEntity.status(HttpStatus.OK).body(service.getAllClientes(pageable));
     }
 
-    @GetMapping("/{conta}")
-    public ResponseEntity<Cliente> getClientes(String conta) throws ClassNotFoundException {
+    @GetMapping("/Conta")
+    public ResponseEntity<Cliente> getClientes(@RequestParam String conta) throws ClassNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body( service.getClienteByConta(conta) );
     }
 
@@ -38,12 +38,12 @@ public class ClienteController {      //Acesse http://localhost:8080/swagger-ui/
         return ResponseEntity.status(HttpStatus.CREATED).body( service.addCliente(cliente) );
     }
 
-    @PutMapping("/Update/{numeroConta}")
-    public ResponseEntity<Cliente> atualizarConta (@RequestBody ClienteUpdate cliente, @PathVariable String numeroConta) throws ClassNotFoundException {
+    @PutMapping("/Update")
+    public ResponseEntity<Cliente> atualizarConta (@RequestBody ClienteUpdate cliente, @RequestParam String numeroConta) throws ClassNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body( service.atualizarCliente(cliente, numeroConta));
     }
 
-    @DeleteMapping("/Delete/{numeroConta}")
+    @DeleteMapping("/Delete")
     public ResponseEntity<String> deletarCliente (@RequestParam String numeroConta) throws ClassNotFoundException {
         service.deleteCliente(numeroConta);
         return ResponseEntity.status(HttpStatus.OK).body("A conta foi deletada com sucesso!");
