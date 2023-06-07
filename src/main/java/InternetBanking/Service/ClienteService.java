@@ -2,6 +2,7 @@ package InternetBanking.Service;
 
 import InternetBanking.Model.Cliente;
 import InternetBanking.Model.RequestsModel.ClienteRequest;
+import InternetBanking.Model.RequestsModel.ClienteUpdate;
 import InternetBanking.Model.Transacao;
 import InternetBanking.Repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 public class ClienteService {
@@ -34,7 +36,7 @@ public class ClienteService {
 
     public void addSaldo(Transacao transacao) throws ClassNotFoundException {
 
-        Cliente cliente = getClienteByConta(transacao.getConta());
+        Cliente cliente = getClienteByConta(transacao.getNumeroConta());
 
         cliente.setSaldo(cliente.getSaldo().add(transacao.getValorTransacao()));
         repository.save(cliente);
@@ -54,6 +56,28 @@ public class ClienteService {
     public void debit(Cliente cliente, BigDecimal valorComTaxa) {
 
         cliente.setSaldo(cliente.getSaldo().subtract(valorComTaxa));
+        repository.save(cliente);
+    }
+
+    public void deleteCliente(String numeroConta) throws ClassNotFoundException {
+        Cliente cliente = getClienteByConta(numeroConta);
+        repository.delete(cliente);
+    }
+
+    public Cliente atualizarCliente(ClienteUpdate cliente, String numeroConta) throws ClassNotFoundException {
+
+        Cliente clienteSalvo = getClienteByConta(numeroConta);
+        clienteSalvo.setNome( cliente.getNome().equals("") ? clienteSalvo.getNome() : cliente.getNome());
+        clienteSalvo.setPlanoExclusive( cliente.isPlanoExclusive());
+        clienteSalvo.setDataNascimento( cliente.getDataNascimento().equals(LocalDate.now()) ? clienteSalvo.getDataNascimento() : cliente.getDataNascimento());
+        clienteSalvo.setNumeroConta( cliente.getNumeroConta() == "" ? clienteSalvo.getNumeroConta() : cliente.getNumeroConta());
+
+        transacaoService.updateTransactionsCliente(clienteSalvo);
+
+        return repository.save(clienteSalvo);
+    }
+
+    public void saveChanges(Cliente cliente) {
         repository.save(cliente);
     }
 }

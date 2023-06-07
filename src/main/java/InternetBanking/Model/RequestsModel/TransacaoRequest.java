@@ -16,4 +16,8 @@ public class TransacaoRequest {
         this.valorTransacao = valorTransacao;
         this.conta = conta;
     }
+
+    public TransacaoRequest(BigDecimal valorTransacao) {
+        this.valorTransacao = valorTransacao;
+    }
 }

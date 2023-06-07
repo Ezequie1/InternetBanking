@@ -1,5 +1,6 @@
 package InternetBanking.Model.ErrorModel;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,7 +25,7 @@ public class HandlerException extends RuntimeException{
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> saldoInsuficienteException() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body( new ErrorResponse(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Não foi possível realizar a transação, saldo insuficiente!."
@@ -33,7 +34,7 @@ public class HandlerException extends RuntimeException{
 
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<ErrorResponse> transacaoPorDataException() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body( new ErrorResponse(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Ops!!! Acho que você passou algum valor inválido, utilize a formatação yyyy-MM-dd. Exemplo: 2022-01-15"
@@ -43,7 +44,7 @@ public class HandlerException extends RuntimeException{
 
     @ExceptionHandler(InvalidAttributesException.class)
     public ResponseEntity<ErrorResponse> nomeInvalido() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body( new ErrorResponse(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Não é possivel salvar dados vazios, preencha todos os campos!."
@@ -52,16 +53,25 @@ public class HandlerException extends RuntimeException{
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> argumentosInvalidos() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body( new ErrorResponse(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Necessário preencher todos os campos!."
         ));
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> maximoCaracteresAtingido() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body( new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "O número da conta só pode ter até 6 números!"
+        ));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> valorInvalido() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body( new ErrorResponse(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Preencha os campos valores com números ao invés de texto!"

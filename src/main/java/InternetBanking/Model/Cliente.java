@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ public class Cliente {
     private String nome;
     private Boolean planoExclusive = false;
     private BigDecimal saldo = new BigDecimal(0);
+    @Size(max = 6)
     private String numeroConta = geradorConta();
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataNascimento;

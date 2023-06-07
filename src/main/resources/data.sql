@@ -3,7 +3,7 @@ CREATE TABLE cliente (
   nome VARCHAR(255),
   plano_exclusive TINYINT,
   saldo DECIMAL(10,2),
-  numero_conta VARCHAR(255),
+  numero_conta VARCHAR(6),
   data_nascimento DATE
 );
 
@@ -15,6 +15,7 @@ INSERT INTO cliente (nome, plano_exclusive, saldo, numero_conta, data_nascimento
   ('Joana', 0, 600.00, '017892', '2003-05-15'),
   ('Beatriz', 1, 1650.00, '986312', '1998-06-12'),
   ('Carlos', 0, 410.00, '002312', '1991-07-07'),
+  ('Ezequiel', 1, 10000.00, '124421', '2002-10-21'),
   ('Izabel', 1, 2350.00, '655463', '1996-12-05');
 
 CREATE TABLE transacao (
@@ -22,14 +23,14 @@ CREATE TABLE transacao (
   id_cliente INT,
   tipo_movimentacao VARCHAR(255),
   valor_transacao DECIMAL(10,2),
-  conta VARCHAR(255),
+  numero_conta VARCHAR(6),
   horario_transacao TIME,
   dia_transacao DATE,
   conta_destino VARCHAR(255) NULL,
   FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
 );
 
-INSERT INTO transacao (id_cliente, tipo_movimentacao, valor_transacao, conta, horario_transacao, dia_transacao, conta_destino) VALUES
+INSERT INTO transacao (id_cliente, tipo_movimentacao, valor_transacao, numero_conta, horario_transacao, dia_transacao, conta_destino) VALUES
 ((SELECT id_cliente FROM cliente WHERE nome = 'João'), 'DEPOSITO', 20000.00, '123456', '10:00', '2022-01-05', ''),
 ((SELECT id_cliente FROM cliente WHERE nome = 'João'), 'SAQUE', 10000.00, '123456', '14:30', '2022-02-07', ''),
 
@@ -52,4 +53,6 @@ INSERT INTO transacao (id_cliente, tipo_movimentacao, valor_transacao, conta, ho
 ((SELECT id_cliente FROM cliente WHERE nome = 'Carlos'), 'SAQUE', 90.00, '002312', '21:15', '2016-04-20', ''),
 
 ((SELECT id_cliente FROM cliente WHERE nome = 'Izabel'), 'DEPOSITO', 5000.00, '655463', '11:23', '2021-03-18', ''),
-((SELECT id_cliente FROM cliente WHERE nome = 'Izabel'), 'SAQUE', 2650.00, '655463', '16:45', '2022-01-15', '');
+((SELECT id_cliente FROM cliente WHERE nome = 'Izabel'), 'SAQUE', 2650.00, '655463', '16:45', '2022-01-15', ''),
+
+((SELECT id_cliente FROM cliente WHERE nome = 'Ezequiel'), 'DEPOSITO', 10000.00, '124421', '16:45', '2020-02-15', '');

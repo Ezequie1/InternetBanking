@@ -3,9 +3,7 @@ package InternetBanking.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,14 +25,14 @@ public class Transacao {
     @Enumerated(EnumType.STRING)
     public TipoMovimentacao tipoMovimentacao;
     public BigDecimal valorTransacao;
-    public String conta;
-    public String contaDestino = "";
+    public String numeroConta;
+    public String numeroContaDestino = "";
     public String horarioTransacao = formataHora();
     public LocalDate diaTransacao = LocalDate.now();
 
     public Transacao(BigDecimal valorTransacao, String conta, TipoMovimentacao tipoMovimentacao) {
         this.valorTransacao = valorTransacao;
-        this.conta = conta;
+        this.numeroConta = conta;
         this.tipoMovimentacao = tipoMovimentacao;
     }
 
