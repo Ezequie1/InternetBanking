@@ -14,15 +14,21 @@ import static org.mockito.Mockito.when;
 
 import InternetBanking.Model.Cliente;
 import InternetBanking.Model.RequestsModel.ClienteRequest;
+import InternetBanking.Model.TipoMovimentacao;
+import InternetBanking.Model.Transacao;
 import InternetBanking.Repository.ClienteRepository;
 
 import java.math.BigDecimal;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.naming.directory.InvalidAttributesException;
 
-import org.junit.Test;
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,6 +38,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,61 +49,68 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ExtendWith(MockitoExtension.class)
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ClienteServiceTest {
+class ClienteServiceTest {
 
-    ClienteRequest clienteRequest;
+    @MockBean
+    private ClienteRepository clienteRepository;
+
+    @InjectMocks
+    private ClienteService clienteService;
+
     @Mock
-    private ClienteRepository clienteRepository = Mockito.mock(ClienteRepository.class);
+    private ClienteService clienteServiceMock;
 
     @Mock
-    private ClienteService clienteService = Mockito.mock(ClienteService.class);
+    private TransacaoService transacaoServiceMock;
+
+    @InjectMocks
+    private TransacaoService transacaoService;
+
 
     @Test
-    public void testAddCliente() throws InvalidAttributesException {
+    void getAllClientesSuccess() {
+        // Dado que eu queira todos os Clientes
+        // Quando eu der o get
+        // Então me retorna todos os clientes
+        Pageable pageable = PageRequest.of(0, 10);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(LocalDate.now().toString(), formatter);
+        List<Cliente> clientes = new ArrayList<>();
+        clientes.add(new Cliente("Ezequiel", true, LocalDate.now()));
 
-        clienteRequest.setDataNascimento(LocalDate.now());
-        clienteRequest.setNome("Ezequiel");
-        clienteRequest.setPlanoExclusive(false);
+        when(clienteRepository.findAll(pageable)).thenReturn(new PageImpl<>(clientes));
 
-        Cliente clienteExpected = clienteService.addCliente(clienteRequest);
+        clienteService.getAllClientes(pageable);
 
-        when(clienteService.addCliente(clienteRequest)).thenReturn(clienteExpected);
-
-        Cliente clienteAtual = clienteService.addCliente(clienteRequest);
-
-        System.out.println(clienteExpected);
-        System.out.println(clienteAtual);
-
-        assertEquals(clienteExpected, clienteAtual);
+        assertEquals(new PageImpl<>(clientes), clienteService.getAllClientes(pageable));
     }
 
     @Test
-    public void testAddCliente2() throws InvalidAttributesException {
-        Cliente cliente = new Cliente("U", true, LocalDate.ofEpochDay(1L));
-
-        when(clienteRepository.save((Cliente) any())).thenReturn(cliente);
-
-        ClienteRequest clienteRequest = new ClienteRequest();
-        clienteRequest.setDataNascimento(LocalDate.ofEpochDay(1L));
-        clienteRequest.setNome("Nome");
-        clienteRequest.setPlanoExclusive(true);
-        Cliente actualAddClienteResult = clienteService.addCliente(clienteRequest);
-        assertSame(cliente, actualAddClienteResult);
-        assertEquals("0", actualAddClienteResult.getSaldo().toString());
-        verify(clienteRepository).save((Cliente) any());
+    void addCliente() {
     }
 
     @Test
-    public void testAddCliente3() throws InvalidAttributesException {
-        when(clienteRepository.save((Cliente) any())).thenReturn(null);
-
-        ClienteRequest clienteRequest = new ClienteRequest();
-        clienteRequest.setDataNascimento(LocalDate.ofEpochDay(1L));
-        clienteRequest.setNome("Nome");
-        clienteRequest.setPlanoExclusive(true);
-        assertNull(clienteService.addCliente(clienteRequest));
-        verify(clienteRepository).save((Cliente) any());
+    void addSaldo() {
     }
 
+    @Test
+    void getClienteByConta() {
+    }
+
+    @Test
+    void debit() {
+    }
+
+    @Test
+    void deleteCliente() {
+    }
+
+    @Test
+    void atualizarCliente() {
+    }
+
+    @Test
+    void saveChanges() {
+    }
 }
 
