@@ -1,4 +1,4 @@
-CREATE TABLE cliente (
+CREATE TABLE IF NOT EXISTS cliente (
   id_cliente INT PRIMARY KEY AUTO_INCREMENT,
   nome VARCHAR(255),
   plano_exclusive TINYINT,
@@ -18,7 +18,7 @@ INSERT INTO cliente (nome, plano_exclusive, saldo, numero_conta, data_nascimento
   ('Ezequiel', 1, 10000.00, '124421', '2002-10-21'),
   ('Izabel', 1, 2350.00, '655463', '1996-12-05');
 
-CREATE TABLE transacao (
+CREATE TABLE IF NOT EXISTS transacao (
   id_transacao INT PRIMARY KEY AUTO_INCREMENT,
   id_cliente INT,
   tipo_movimentacao VARCHAR(255),

@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
@@ -30,19 +32,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 @RunWith(SpringRunner.class)
-@SpringBootTest
 class TransacaoServiceTest {
 
     @InjectMocks
     TransacaoService service;
 
-    @InjectMocks
-    ClienteService serviceCliente;
-
-    @MockBean
+    @Mock
     TransacaoRepository repository;
 
     @Mock
@@ -52,10 +49,7 @@ class TransacaoServiceTest {
     ClienteService serviceClienteMock;
 
     @Test
-    void getAllTransacoesSuccess() throws ClassNotFoundException {
-        // Dado que eu queira todas as transações
-        // Quando eu informar a data
-        // Então me retorna todas as transações com a data passada
+    void deveRetornarTodasTransacoesComDataIgualAInformada() {
         Pageable pageable = PageRequest.of(0, 10);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(LocalDate.now().toString(), formatter);
@@ -70,11 +64,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void getAllTransacoesEmpty() {
-        // Dado que eu queira todas as transações
-        // Quando eu informar a data que nao corresponde a nenhuma transação
-        // Então me retorna um notFound
-
+    void deveRetornarPaginaComListaDeTranacoesVaziaQuandoNaoHouverTransacoes() {
         Pageable pageable = PageRequest.of(0, 10);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse("2000-02-15", formatter);
@@ -89,10 +79,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void getTransacoesPorTipoSuccess() {
-        // Dado que eu queira todas as transações com tipoMovimentacao e data
-        // Quando eu informar a data e o tipo
-        // Então me retorna todas as transações com tipo e data iguais
+    void deveRetornarTodasTransacoesComTipoEDataIguaisAPassada() {
         Pageable pageable = PageRequest.of(0, 10);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse("2022-01-05", formatter);
@@ -106,10 +93,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void depositarSuccess() throws ClassNotFoundException {
-        // Dado que eu queira fazer uma transação de deposito
-        // Quando eu informar a Transacao request
-        // Então me retorna a transação criada
+    void deveCriarTransacaoDeDepositoAssimQueSerPassadoTransacaoRequest() throws ClassNotFoundException {
 
         TransacaoRequest transacaoRequest = new TransacaoRequest(new BigDecimal("1000.00"), "123456");
         Transacao transacao = new Transacao(transacaoRequest.getValorTransacao(), transacaoRequest.getConta(), TipoMovimentacao.DEPOSITO);
@@ -123,10 +107,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void depositarAccountNotFound() throws ClassNotFoundException {
-        // Dado que eu queira fazer uma transação de depósito
-        // Quando eu informar a TransacaoRequest com conta inválida
-        // Então me retorna ClassNotFoundException
+    void deveRetornarClassNotFoundExceptionQuandoContaNaoExistir() throws ClassNotFoundException {
         TransacaoRequest transacaoRequest = new TransacaoRequest(new BigDecimal("1000.00"), "12126");
         when(serviceMock.depositar(transacaoRequest)).thenThrow(ClassNotFoundException.class);
 
@@ -136,10 +117,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void sacar() throws ClassNotFoundException {
-        // Dado que eu queira fazer uma transação de SAQUE
-        // Quando eu informar a Transacao request
-        // Então me retorna a transação criada
+    void deveCriarTransacaoDeSaqueAssimQueSerPassadoTransacaoRequest() throws ClassNotFoundException {
 
         TransacaoRequest transacaoRequest = new TransacaoRequest(new BigDecimal("1000.00"), "123456");
         Transacao transacao = new Transacao(transacaoRequest.getValorTransacao(), transacaoRequest.getConta(), TipoMovimentacao.SAQUE);
@@ -153,11 +131,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void sacarFalhaSemSaldo() throws ClassNotFoundException {
-        // Dado que eu queira fazer uma transação de SAQUE
-        // Quando eu informar a Transacao request com valor maior que saldo disponível
-        // Então me retorna IllegalArgumentException
-
+    void deveRetornarClassNotFoundExceptionQuandoContaNaoExistirParaSaque() throws ClassNotFoundException {
         TransacaoRequest transacaoRequest = new TransacaoRequest(new BigDecimal("1000.00"), "12126");
         when(serviceMock.sacar(transacaoRequest)).thenThrow(IllegalArgumentException.class);
 
@@ -167,10 +141,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void hasSaldo() {
-        // Dado que eu queira verificar o valor do SAQUE e o saldo da conta
-        // Quando eu informar a Transacao request
-        // Então me retorna true
+    void deveRetornarTrueQuandoClientePossuirSaldo() {
         TransacaoRequest transacaoRequest = new TransacaoRequest(new BigDecimal("1000.00"), "12126");
         Cliente cliente = new Cliente("Ezequiel", true, LocalDate.now());
 
@@ -182,10 +153,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void notHasSaldo() {
-        // Dado que eu queira verificar o valor do SAQUE e o saldo da conta
-        // Quando eu informar a Transacao request com valor maior que o saldo
-        // Então me retorna false
+    void deveRetornarFalseQuandoClientePossuirSaldo() {
         TransacaoRequest transacaoRequest = new TransacaoRequest(new BigDecimal("1000.00"), "12126");
         Cliente cliente = new Cliente("Ezequiel", true, LocalDate.now());
 
@@ -197,10 +165,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void addTransacao() throws ClassNotFoundException {
-        // Dado que eu queira adicionar uma transacao a um cliente
-        // Quando eu informar a Transacao
-        // Então me salva o cliente, aqui é conferido o numero da conta se são iguais
+    void deveSalvarTransacaoAoClienteQuandoForPassadoCliente() throws ClassNotFoundException {
         TransacaoRequest transacaoRequest = new TransacaoRequest(new BigDecimal("1000.00"), "123456");
         Transacao transacao = new Transacao(transacaoRequest.getValorTransacao(), transacaoRequest.getConta(), TipoMovimentacao.SAQUE);
 
@@ -214,10 +179,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void addTransacaoFalha() throws ClassNotFoundException {
-        // Dado que eu queira adicionar uma transacao a um cliente
-        // Quando eu informar a Transacao com conta inexistente
-        // Então lança uma ClassNotFoundException
+    void deveRetornarClassNotFoundExceptionQuandoPassarContaInvalidaParaAdicionarTransacao() throws ClassNotFoundException {
         TransacaoRequest transacaoRequest = new TransacaoRequest(new BigDecimal("1000.00"), "114411");
         Transacao transacao = new Transacao(transacaoRequest.getValorTransacao(), transacaoRequest.getConta(), TipoMovimentacao.SAQUE);
 
@@ -229,10 +191,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void updateTransactionsCliente() throws ClassNotFoundException {
-        // Dado que eu queira atualizar o numero da conta nas transacoes de um cliente
-        // Quando eu informar o cliente
-        // Então atualiza o numero conta de todas as transações daquele cliente
+    void deveAtualizarNumeroContaDasTransacoesQuandoClienteTrocarDeNumeroConta() throws ClassNotFoundException {
         Cliente cliente = new Cliente("Ezequiel", true, LocalDate.now());
         service.updateTransactionsCliente(cliente);
 
@@ -242,10 +201,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void getTransacoesPorConta() throws ClassNotFoundException {
-        // Dado que eu queira pegar transacoes através do numero da conta
-        // Quando eu informar o numero da conta
-        // Então me retorna as transacoes
+    void deveRetornarTransacoesComNumeroContaQuandoForPassadoNumeroContaValido() throws ClassNotFoundException {
         Pageable pageable = PageRequest.of(0, 10);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse("2022-01-05", formatter);
@@ -260,10 +216,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void getTransacoesPorContaFalha() throws ClassNotFoundException {
-        // Dado que eu queira pegar transacoes através do numero da conta
-        // Quando eu informar o numero da conta errada
-        // Então me retorna ClassNotFoundExcetption
+    void deveRetornarClassNotFoundExceptionQuandoNaoExistirConta() throws ClassNotFoundException {
         Pageable pageable = PageRequest.of(0, 10);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -274,11 +227,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void cancelaTransacaoFalha() throws ClassNotFoundException {
-        // Dado que eu queira excluir uma transação
-        // Quando eu informar o numero da conta e o idTransacao errado
-        //verifica lanca uma exception
-
+    void deveRetornarExceptionQuandoForPassadoIdTransacaoENumeroContaInvalidos() throws ClassNotFoundException {
         when(serviceClienteMock.getClienteByConta("123456")).thenThrow(ClassNotFoundException.class);
 
         Executable methodCall = () -> service.cancelaTransacao("123456", 1L);
@@ -286,10 +235,7 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void atualizaTransacao() throws ClassNotFoundException {
-        // Dado que eu queira atualizar uma transação
-        // Quando eu informar o numero da conta e o idTransacao errado
-        //verifica lanca uma exception
+    void deveRetornarExceptionQuandoClienteNaoExiste() throws ClassNotFoundException {
         TransacaoUpdate transacao = new TransacaoUpdate();
         transacao.setValorTransacao(new BigDecimal("12000.00"));
 

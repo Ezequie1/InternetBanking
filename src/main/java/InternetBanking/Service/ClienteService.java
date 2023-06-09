@@ -35,7 +35,6 @@ public class ClienteService {
     }
 
     public void addSaldo(Transacao transacao) throws ClassNotFoundException {
-
         Cliente cliente = getClienteByConta(transacao.getNumeroConta());
 
         cliente.setSaldo(cliente.getSaldo().add(transacao.getValorTransacao()));

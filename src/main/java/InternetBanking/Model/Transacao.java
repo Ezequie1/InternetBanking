@@ -26,7 +26,6 @@ public class Transacao {
     public TipoMovimentacao tipoMovimentacao;
     public BigDecimal valorTransacao;
     public String numeroConta;
-    public String numeroContaDestino = "";
     public String horarioTransacao = formataHora();
     public LocalDate diaTransacao = LocalDate.now();
 
