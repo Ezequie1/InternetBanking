@@ -16,7 +16,7 @@ import javax.naming.directory.InvalidAttributesException;
 
 @RestController
 @RequestMapping("/Clientes")
-public class ClienteController {      //Acesse http://localhost:8080/swagger-ui/index.html para utilizar o swagger
+public class ClienteController {      //Acesse http://localhost:8090/swagger-ui/index.html para utilizar o swagger
 
     @Autowired
     private ClienteService service;
